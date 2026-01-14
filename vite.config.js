@@ -6,5 +6,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     allowedHosts: ['sk96ps-5173.csb.app'],
+    proxy: {
+      '/api': {
+        target: 'https://acm-xim-envoy-backend.onrender.com',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 })
