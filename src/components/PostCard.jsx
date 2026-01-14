@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import api from '../services/api';
+import { likePost, deletePost } from '../api/posts';
+import { fetchComments, addComment, deleteComment } from '../api/comments';
 import CommentBox from './CommentBox';
 
 const PostCard = ({ post, onDelete }) => {
@@ -16,7 +17,7 @@ const PostCard = ({ post, onDelete }) => {
     const handleLike = async () => {
         if (!user) return alert('Please login to like posts');
         try {
-            const { data } = await api.put(`/posts/like/${post._id}`);
+            const { data } = await likePost(post._id);
             // Backend returns the updated likes array
             setLikes(data);
         } catch (err) {
@@ -28,7 +29,7 @@ const PostCard = ({ post, onDelete }) => {
         if (!showComments) {
             setLoadingComments(true);
             try {
-                const { data } = await api.get(`/comments/${post._id}`);
+                const { data } = await fetchComments(post._id);
                 setComments(data);
             } catch (err) {
                 console.error(err);
@@ -42,7 +43,7 @@ const PostCard = ({ post, onDelete }) => {
     const handleAddComment = async (text) => {
         if (!user) return alert("Login to comment");
         try {
-            const { data } = await api.post('/comments', { postId: post._id, text });
+            const { data } = await addComment({ postId: post._id, text });
             setComments([data, ...comments]);
         } catch (err) {
             console.error(err);
@@ -52,7 +53,7 @@ const PostCard = ({ post, onDelete }) => {
     const handleDeleteComment = async (commentId) => {
         if (!window.confirm("Delete this comment?")) return;
         try {
-            await api.delete(`/comments/${commentId}`);
+            await deleteComment(commentId);
             setComments(comments.filter(c => c._id !== commentId));
         } catch (err) {
             console.error(err);
@@ -62,7 +63,7 @@ const PostCard = ({ post, onDelete }) => {
     const handleDeletePost = async () => {
         if (!window.confirm("Delete this post? This cannot be undone.")) return;
         try {
-            await api.delete(`/posts/${post._id}`);
+            await deletePost(post._id);
             if (onDelete) onDelete(post._id);
         } catch (err) {
             console.error(err);

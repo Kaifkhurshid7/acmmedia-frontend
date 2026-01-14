@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import api from '../services/api';
+import { fetchEvents, deleteEvent } from '../api/events';
 import { AuthContext } from '../context/AuthContext';
 
 const Events = () => {
@@ -7,13 +7,13 @@ const Events = () => {
     const { user } = useContext(AuthContext);
 
     useEffect(() => {
-        api.get('/events').then(res => setEvents(res.data));
+        fetchEvents().then(res => setEvents(res.data));
     }, []);
 
     const handleDeleteEvent = async (id) => {
         if (!window.confirm("Are you sure you want to permanently remove this event from the portal?")) return;
         try {
-            await api.delete(`/events/${id}`);
+            await deleteEvent(id);
             setEvents(events.filter(e => e._id !== id));
         } catch (err) {
             console.error(err);

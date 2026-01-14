@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import api from "../services/api";
+import { fetchPosts } from "../api/posts";
 import { AuthContext } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
 import TechPulse from "../components/TechPulse";
@@ -9,7 +9,7 @@ export default function Home() {
     const { user } = useContext(AuthContext);
 
     useEffect(() => {
-        api.get("/posts").then(res => setPosts(res.data));
+        fetchPosts().then(res => setPosts(res.data));
     }, []);
 
     const handleDeletePost = (id) => {

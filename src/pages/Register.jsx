@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from '../services/api';
+import { signup } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
@@ -17,7 +17,7 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/auth/register', formData);
+            await signup(formData);
             alert("Registration successful! Please login to continue.");
             navigate(formData.role === 'admin' ? '/admin-login' : '/login');
         } catch (err) {

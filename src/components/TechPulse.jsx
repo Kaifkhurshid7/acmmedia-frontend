@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../services/api';
+import { fetchExternalNews } from '../api/news';
 import '../styles/techpulse.css';
 
 const TechPulse = ({ mode = 'grid' }) => {
@@ -10,7 +10,7 @@ const TechPulse = ({ mode = 'grid' }) => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const res = await api.get('/external-news');
+                const res = await fetchExternalNews();
                 // Ensure we get an array
                 const data = Array.isArray(res.data) ? res.data : [];
                 setNews(data);

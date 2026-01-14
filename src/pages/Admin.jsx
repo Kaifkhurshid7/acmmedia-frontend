@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import api from '../services/api';
+import { createPost } from '../api/posts';
+import { createEvent } from '../api/events';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,7 +19,7 @@ const Admin = () => {
     const handleCreatePost = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/posts', postData);
+            await createPost(postData);
             alert("Post created successfully!");
             setPostData({ title: '', content: '' });
         } catch (err) {
@@ -29,7 +30,7 @@ const Admin = () => {
     const handleCreateEvent = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/events', eventData);
+            await createEvent(eventData);
             alert("Event created successfully!");
             setEventData({ title: '', description: '', date: '', location: '', registrationLink: '' });
         } catch (err) {

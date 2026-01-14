@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import api from '../services/api';
+import { fetchThreads, createThread, deleteThread, replyToThread } from '../api/forum';
 import { AuthContext } from '../context/AuthContext';
 
 const Forum = () => {
@@ -8,13 +8,13 @@ const Forum = () => {
     const { user } = useContext(AuthContext);
 
     useEffect(() => {
-        api.get('/forum').then(res => setThreads(res.data));
+        fetchThreads().then(res => setThreads(res.data));
     }, []);
 
     const handleCreateThread = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await api.post('/forum', newThread);
+            const { data } = await createThread(newThread);
             setThreads([data, ...threads]);
             setNewThread({ title: '', description: '' });
         } catch (err) {
@@ -25,7 +25,7 @@ const Forum = () => {
     const handleDeleteThread = async (id) => {
         if (!window.confirm("Delete this thread?")) return;
         try {
-            await api.delete(`/forum/${id}`);
+            await deleteThread(id);
             setThreads(threads.filter(t => t._id !== id));
         } catch (err) {
             console.error(err);
@@ -126,8 +126,8 @@ const Forum = () => {
                                                     e.target.value.trim()
                                                 ) {
                                                     const { data } =
-                                                        await api.post(
-                                                            `/forum/reply/${t._id}`,
+                                                        await replyToThread(
+                                                            t._id,
                                                             { text: e.target.value }
                                                         );
                                                     setThreads(

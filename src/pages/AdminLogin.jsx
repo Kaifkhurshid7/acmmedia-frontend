@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import { getCurrentUser } from '../api/auth';
 
 const AdminLogin = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
@@ -14,7 +14,7 @@ const AdminLogin = () => {
             await login(formData.email, formData.password);
 
             // Verify admin role
-            const { data } = await api.get('/auth/me');
+            const { data } = await getCurrentUser();
             if (data.role !== 'admin') {
                 alert("Access Denied: Administrative privileges required.");
                 logout();

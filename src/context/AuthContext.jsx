@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import api from "../services/api";
+import * as authApi from "../api/auth";
 
 export const AuthContext = createContext();
 
@@ -12,8 +12,8 @@ export const AuthProvider = ({ children }) => {
             const token = localStorage.getItem("token");
             if (token) {
                 try {
-                        const { data } = await api.get("/auth/me");
-                        setUser(data);
+                    const { data } = await authApi.getCurrentUser();
+                    setUser(data);
                 } catch (err) {
                     localStorage.removeItem("token");
                 }
@@ -24,10 +24,10 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        const { data } = await api.post("/auth/login", { email, password });
+        const { data } = await authApi.login({ email, password });
         localStorage.setItem("token", data.token);
         try {
-            const { data: me } = await api.get('/auth/me');
+            const { data: me } = await authApi.getCurrentUser();
             setUser(me);
         } catch (err) {
             setUser({ token: data.token });
