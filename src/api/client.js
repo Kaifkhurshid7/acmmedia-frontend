@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const client = axios.create({
-    baseURL: import.meta.env.PROD
-        ? 'https://acm-xim-envoy-backend.onrender.com/api'
-        : '/api',
+    baseURL: 'https://acmmedia-backend.onrender.com/api'
+    // baseURL: 'http://localhost:5000/api'
+    
 });
 
 // Add interceptor to include token in requests
