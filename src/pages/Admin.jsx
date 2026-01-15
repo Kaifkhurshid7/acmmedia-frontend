@@ -59,8 +59,6 @@ const Admin = () => {
                 <h1>Admin Control Panel</h1>
                 <p>
                     Welcome to the <strong>ACM-XIM-ENVOY</strong> administration dashboard.
-                    From here, administrators can publish official chapter news, manage
-                    events, and monitor engagement across the AntiGravity platform.
                 </p>
             </header>
 
