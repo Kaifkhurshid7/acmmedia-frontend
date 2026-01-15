@@ -1,5 +1,5 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const Navbar = () => {
@@ -7,10 +7,11 @@ const Navbar = () => {
     const [open, setOpen] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const dropdownRef = useRef(null);
+    const location = useLocation();
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
                 setShowProfile(false);
             }
         };
@@ -18,169 +19,77 @@ const Navbar = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const handleLogout = () => {
-        logout();
-        setOpen(false);
-        setShowProfile(false);
-    };
+    const isActive = (path) => location.pathname === path;
 
     return (
-        <header className="news-navbar" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
+        <header className="news-navbar">
             <div className="nav-container">
-                {/* Brand Section */}
+                {/* BRAND - Left */}
                 <Link to="/" className="nav-brand" onClick={() => setOpen(false)}>
                     <span className="brand-title">ACM-XIM-ENVOY</span>
+                    <span className="brand-subtitle">EDITORIAL & NEWS</span>
                 </Link>
 
-                {/* Mobile Hamburger Toggle */}
-                <button
-                    className="hamburger"
-                    onClick={() => setOpen(true)}
-                    aria-label="Open menu"
-                >
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+                {/* RIGHT CONTENT GROUP */}
+                <div className="nav-right-side">
+                    {/* DESKTOP NAV - Grouped on right */}
+                    <nav className="desktop-links">
+                        <Link to="/" className={isActive('/') ? 'active' : ''}>HOME</Link>
+                        <Link to="/news" className={isActive('/news') ? 'active' : ''}>NEWS</Link>
+                        <Link to="/events" className={isActive('/events') ? 'active' : ''}>EVENTS</Link>
+                        <Link to="/forum" className={isActive('/forum') ? 'active' : ''}>FORUM</Link>
+                    </nav>
 
-                {/* Main Navigation Menu */}
-                <nav className={`nav-menu ${open ? 'open' : ''}`}>
-                    <button
-                        className="menu-close"
-                        onClick={() => setOpen(false)}
-                        aria-label="Close menu"
-                    >
-                        ✕
-                    </button>
+                    {user ? (
+                        <div className="profile-outer" ref={dropdownRef}>
+                            <div className="user-pill-div" onClick={() => setShowProfile(!showProfile)}>
+                                <div className="avatar-circle">{user.name?.charAt(0).toUpperCase()}</div>
+                                <span className="pill-text">{user.email}</span>
+                            </div>
 
-                    <ul className="nav-links">
-                        <li><Link to="/" onClick={() => setOpen(false)}>Home</Link></li>
-                        <li><Link to="/news" onClick={() => setOpen(false)}>Global News</Link></li>
-                        <li><Link to="/events" onClick={() => setOpen(false)}>Events</Link></li>
-                        <li><Link to="/forum" onClick={() => setOpen(false)}>Forum</Link></li>
-
-                        {user ? (
-                            <>
-                                {user.role === 'admin' && (
-                                    <li>
-                                        <Link to="/admin" className="admin-link" onClick={() => setOpen(false)}>
-                                            Admin Desk
-                                        </Link>
-                                    </li>
-                                )}
-
-                                {/* User Profile Dropdown Section */}
-                                <li className="profile-item" style={{ position: 'relative' }} ref={dropdownRef}>
-                                    <div
-                                        className="user-profile-trigger"
-                                        onClick={() => setShowProfile(!showProfile)}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '10px',
-                                            cursor: 'pointer',
-                                            padding: '6px 14px',
-                                            background: 'rgba(255,255,255,0.05)',
-                                            borderRadius: '25px',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                            transition: '0.3s'
-                                        }}
-                                    >
-                                        <div style={{
-                                            width: '26px', height: '26px', borderRadius: '50%',
-                                            background: '#ffffff', color: '#000000',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            fontWeight: 'bold', fontSize: '0.8rem'
-                                        }}>
-                                            {user.name?.charAt(0).toUpperCase()}
+                            {showProfile && (
+                                <div className="editorial-dropdown">
+                                    <div className="drop-section">
+                                        <div className="drop-info">
+                                            <label>NAME</label>
+                                            <div className="drop-row">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                                <p>{user.name}</p>
+                                            </div>
                                         </div>
-                                        <span style={{ fontSize: '0.9rem', color: '#fff', fontWeight: '500' }}>
-                                            {user.name.split(' ')[0]} {/* Shows only first name to keep it clean */}
-                                        </span>
-                                        <span style={{ fontSize: '0.6rem', opacity: 0.6 }}>{showProfile ? '▲' : '▼'}</span>
+                                        <div className="drop-info">
+                                            <label>EMAIL</label>
+                                            <div className="drop-row">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                                <p>{user.email}</p>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <button onClick={logout} className="logout-red-btn">
+                                        SECURE LOGOUT
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <Link to="/login" className="login-pill">LOGIN</Link>
+                    )}
 
-                                    {/* Dropdown Card */}
-                                    {showProfile && (
-                                        <div className="profile-details-dropdown" style={{
-                                            position: 'absolute', top: '50px', right: '0',
-                                            width: '260px', background: '#121212',
-                                            border: '1px solid #333', borderRadius: '14px',
-                                            padding: '20px', zIndex: 1001,
-                                            boxShadow: '0 15px 35px rgba(0,0,0,0.7)',
-                                            textAlign: 'left'
-                                        }}>
-                                            {/* User Info */}
-                                            <div style={{ marginBottom: '15px', borderBottom: '1px solid #222', paddingBottom: '12px' }}>
-                                                <p style={{ fontSize: '1rem', fontWeight: 'bold', color: '#fff', margin: 0 }}>
-                                                    {user.name}
-                                                </p>
-                                                <p style={{ fontSize: '0.8rem', color: '#888', margin: '4px 0 0 0', wordBreak: 'break-all' }}>
-                                                    {user.email || "No email provided"}
-                                                </p>
-                                            </div>
+                    {/* HAMBURGER - Animated to X */}
+                    <button className={`hamburger-btn ${open ? 'open' : ''}`} onClick={() => setOpen(!open)}>
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
 
-                                            {/* Role Info */}
-                                            <div style={{ marginBottom: '20px' }}>
-                                                <label style={{ fontSize: '0.6rem', color: '#555', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 'bold' }}>
-                                                    Membership Status
-                                                </label>
-                                                <div style={{
-                                                    marginTop: '6px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '6px',
-                                                    padding: '5px 10px',
-                                                    borderRadius: '6px',
-                                                    background: user.role === 'admin' ? 'rgba(255, 215, 0, 0.05)' : 'rgba(255,255,255,0.03)',
-                                                    border: `1px solid ${user.role === 'admin' ? '#ffd700' : '#444'}`
-                                                }}>
-                                                    <span style={{ fontSize: '0.8rem' }}>
-                                                        {user.role === 'admin' ? '🛡️' : '🎓'}
-                                                    </span>
-                                                    <p style={{ fontSize: '0.75rem', color: user.role === 'admin' ? '#ffd700' : '#fff', margin: 0, fontWeight: '600' }}>
-                                                        {user.role === 'admin' ? 'Administrator' : 'Chapter Member'}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            {/* Logout Button */}
-                                            <button
-                                                onClick={handleLogout}
-                                                className="logout-btn"
-                                                style={{
-                                                    width: '100%', padding: '12px',
-                                                    background: 'transparent',
-                                                    color: '#ff4444', border: '1px solid #ff4444',
-                                                    borderRadius: '8px', cursor: 'pointer',
-                                                    fontWeight: 'bold', fontSize: '0.85rem',
-                                                    transition: '0.2s'
-                                                }}
-                                                onMouseOver={(e) => {
-                                                    e.target.style.background = 'rgba(255, 68, 68, 0.1)';
-                                                }}
-                                                onMouseOut={(e) => {
-                                                    e.target.style.background = 'transparent';
-                                                }}
-                                            >
-                                                Secure Logout
-                                            </button>
-                                        </div>
-                                    )}
-                                </li>
-                            </>
-                        ) : (
-                            <>
-                                <li><Link to="/login" onClick={() => setOpen(false)}>Login</Link></li>
-                                <li>
-                                    <Link to="/register" className="register-link" onClick={() => setOpen(false)}>
-                                        Register
-                                    </Link>
-                                </li>
-                            </>
-                        )}
-                    </ul>
-                </nav>
+                {/* MOBILE OVERLAY */}
+                <div className={`mobile-fs-menu ${open ? 'active' : ''}`}>
+                    <nav className="mobile-stack">
+                        <Link to="/" onClick={() => setOpen(false)}>HOME</Link>
+                        <Link to="/news" onClick={() => setOpen(false)}>NEWS</Link>
+                        <Link to="/events" onClick={() => setOpen(false)}>EVENTS</Link>
+                        <Link to="/forum" onClick={() => setOpen(false)}>FORUM</Link>
+                    </nav>
+                </div>
             </div>
         </header>
     );

@@ -1,193 +1,116 @@
-/* =====================================================
-   NAVBAR – FULL SCREEN MOBILE MENU (NEWS / EDITORIAL)
-   Platform: ACM-XIM-ENVOY | Project: acmmedia
-   ===================================================== */
-
+/* --- CORE --- */
 .news-navbar {
-    width: 100%;
-    background: #0b0b0c;
-    border-bottom: 1px solid #1f1f1f;
+    background: #000;
+    border-bottom: 1px solid #1a1a1a;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 2000;
+    padding: 0.8rem 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* ---------- Container ---------- */
 .nav-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 1rem 1.5rem;
+    padding: 0 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-/* ---------- Brand ---------- */
-.nav-brand {
-    text-decoration: none;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-}
+/* --- BRAND --- */
+.nav-brand { text-decoration: none; display: flex; flex-direction: column; }
+.brand-title { color: #fff; font-size: 1.3rem; font-weight: 900; letter-spacing: -0.5px; }
+.brand-subtitle { color: #666; font-size: 0.65rem; letter-spacing: 1.5px; margin-top: 2px; }
 
-.brand-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.brand-subtitle {
-    font-size: 0.7rem;
-    color: #9a9a9a;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* ---------- Desktop Menu ---------- */
-.nav-menu {
-    display: flex;
-}
-
-.nav-links {
-    list-style: none;
+/* --- RIGHT SIDE GROUP --- */
+.nav-right-side {
     display: flex;
     align-items: center;
-    gap: 1.6rem;
-    margin: 0;
-    padding: 0;
+    gap: 2.5rem;
 }
 
-.nav-links li a {
-    text-decoration: none;
-    color: #e5e5e5;
-    font-size: 0.9rem;
+.desktop-links { display: flex; gap: 1.8rem; }
+.desktop-links a {
+    color: #888; text-decoration: none; font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 0.5px; transition: 0.3s;
 }
+.desktop-links a:hover, .desktop-links a.active { color: #fff; }
 
-.nav-links li a:hover {
-    text-decoration: underline;
-}
-
-/* ---------- Admin ---------- */
-.admin-link {
-    font-weight: 600;
-    text-decoration: underline;
-}
-
-/* ---------- Buttons ---------- */
-.logout-btn {
-    background: transparent;
-    border: 1px solid #2a2a2a;
-    color: #e5e5e5;
-    font-size: 0.85rem;
-    padding: 0.4rem 0.9rem;
-    border-radius: 6px;
+/* --- PILL DIV --- */
+.user-pill-div {
+    background: #111;
+    border: 1px solid #222;
+    padding: 4px 14px 4px 4px;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     cursor: pointer;
+    transition: 0.2s;
+}
+.user-pill-div:hover { border-color: #444; }
+
+.avatar-circle {
+    width: 28px; height: 28px; background: #fff; color: #000;
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 0.75rem;
+}
+.pill-text { color: #eee; font-size: 0.85rem; font-weight: 500; }
+
+/* --- DROPDOWN & LOGOUT --- */
+.editorial-dropdown {
+    position: absolute; top: 65px; right: 0;
+    width: 260px; background: #0a0a0a; border: 1px solid #222;
+    border-radius: 8px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
 }
 
-.register-link {
-    padding: 0.4rem 0.9rem;
-    border-radius: 6px;
-    border: 1px solid #2a2a2a;
+.drop-info { margin-bottom: 15px; }
+.drop-info label { font-size: 0.6rem; color: #555; font-weight: 800; display: block; margin-bottom: 4px; }
+.drop-row { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 0.85rem; }
+.drop-row svg { color: #444; }
+
+/* Fixed Logout with Red Border */
+.logout-red-btn {
+    width: 100%; margin-top: 10px; padding: 10px;
+    background: transparent; border: 1px solid #ff4444; color: #ff4444;
+    font-weight: 800; font-size: 0.75rem; border-radius: 6px;
+    cursor: pointer; transition: 0.2s;
+}
+.logout-red-btn:hover { background: rgba(255, 68, 68, 0.1); }
+
+/* --- HAMBURGER (No Shadow) --- */
+.hamburger-btn {
+    display: none; background: none; border: none; outline: none; /* Removed white shadow */
+    cursor: pointer; width: 25px; height: 18px; position: relative; padding: 0;
 }
 
-/* ---------- Hamburger ---------- */
-.hamburger {
-    display: none;
-    background: none;
-    border: none;
-    cursor: pointer;
+.hamburger-btn span {
+    display: block; width: 100%; height: 2px; background: #fff;
+    position: absolute; transition: 0.4s;
 }
+.hamburger-btn span:nth-child(1) { top: 0; }
+.hamburger-btn span:nth-child(2) { top: 8px; }
+.hamburger-btn span:nth-child(3) { top: 16px; }
 
-.hamburger span {
-    display: block;
-    width: 26px;
-    height: 2px;
-    background: #ffffff;
-    margin: 6px 0;
+/* Transform to X */
+.hamburger-btn.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.hamburger-btn.open span:nth-child(2) { opacity: 0; }
+.hamburger-btn.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+/* --- MOBILE MENU --- */
+.mobile-fs-menu {
+    position: fixed; inset: 0; background: #000;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden; transition: 0.3s;
 }
+.mobile-fs-menu.active { opacity: 1; visibility: visible; }
+.mobile-stack { display: flex; flex-direction: column; gap: 2rem; text-align: center; }
+.mobile-stack a { color: #fff; font-size: 2.2rem; font-weight: 900; text-decoration: none; }
 
-/* Hide close button by default (desktop) */
-.menu-close {
-    display: none;
-}
-
-
-/* =====================================================
-   MOBILE – FULL SCREEN OVERLAY MENU
-   ===================================================== */
-
-@media (max-width: 768px) {
-
-    /* Show hamburger */
-    .hamburger {
-        display: block;
-    }
-
-    /* Full screen overlay */
-    .nav-menu {
-        position: fixed;
-        inset: 0;
-        background: #0b0b0c;
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 2000;
-    }
-
-    .nav-menu.open {
-        display: flex;
-    }
-
-    /* Close button (X) */
-    .menu-close {
-        position: absolute;
-        top: 1.8rem;
-        right: 1.8rem;
-        background: none;
-        border: none;
-        color: #ffffff;
-        font-size: 2.2rem;
-        cursor: pointer;
-    }
-
-    /* Menu items */
-    .nav-links {
-        flex-direction: column;
-        gap: 2.4rem;
-        /* MORE SPACE */
-        text-align: center;
-    }
-
-    .nav-links li a {
-        font-size: 1.7rem;
-        /* BIG TEXT */
-        font-weight: 500;
-    }
-
-    .logout-btn,
-    .register-link {
-        font-size: 1.4rem;
-        padding: 0.6rem 1.6rem;
-    }
-
-    .nav-links li {
-        width: 100%;
-    }
-}
-
-/* =====================================================
-   EXTRA SMALL DEVICES (360px)
-   ===================================================== */
-@media (max-width: 400px) {
-    .brand-title {
-        font-size: 1.25rem;
-    }
-
-    .nav-container {
-        padding: 0.8rem 1rem;
-    }
-
-    .hamburger span {
-        width: 22px;
-        margin: 5px 0;
-    }
+@media (max-width: 1024px) {
+    .desktop-links { display: none; }
+    .hamburger-btn { display: block; }
+    .pill-text { display: none; }
+    .user-pill-div { padding: 4px; }
 }
