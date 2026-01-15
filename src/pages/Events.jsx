@@ -27,7 +27,7 @@ const Events = () => {
             <header className="events-header">
                 <h2 className="section-title">Chapter Events & Technical Engagements</h2>
                 <p className="section-subtitle">
-                    Explore high-impact workshops, hackathons, and seminars curated by the
+                    Explore high-impact Events, workshops, hackathons, and seminars curated by the
                     <strong> ACM Student Chapter of XIM University</strong>. Stay informed
                     and registered through the central Envoy platform.
                 </p>

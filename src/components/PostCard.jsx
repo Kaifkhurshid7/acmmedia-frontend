@@ -103,7 +103,7 @@ const PostCard = ({ post, onDelete }) => {
                         onClick={toggleComments}
                         style={{ padding: '0.6rem 1.2rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: '#ffffff', borderRadius: '8px', cursor: 'pointer' }}
                     >
-                        💬 Discussion
+                        💬 Comments
                     </button>
                 </div>
 

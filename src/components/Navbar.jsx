@@ -37,6 +37,17 @@ const Navbar = () => {
                         <Link to="/news" className={isActive('/news') ? 'active' : ''}>NEWS</Link>
                         <Link to="/events" className={isActive('/events') ? 'active' : ''}>EVENTS</Link>
                         <Link to="/forum" className={isActive('/forum') ? 'active' : ''}>FORUM</Link>
+
+                        {/* FIXED: Show Admin Dashboard link if user is admin */}
+                        {user && user.role === 'admin' && (
+                            <Link
+                                to="/admin"
+                                className={isActive('/admin') ? 'active admin-link' : 'admin-link'}
+                                style={{ color: '#ffd700' }}
+                            >
+                                DASHBOARD
+                            </Link>
+                        )}
                     </nav>
 
                     <div className="auth-interaction-zone">
@@ -102,6 +113,11 @@ const Navbar = () => {
                         <Link to="/news" onClick={() => setOpen(false)}>NEWS</Link>
                         <Link to="/events" onClick={() => setOpen(false)}>EVENTS</Link>
                         <Link to="/forum" onClick={() => setOpen(false)}>FORUM</Link>
+
+                        {/* MOBILE ADMIN LINK */}
+                        {user && user.role === 'admin' && (
+                            <Link to="/admin" onClick={() => setOpen(false)} style={{ color: '#ffd700' }}>DASHBOARD</Link>
+                        )}
                     </nav>
                 </div>
             </div>

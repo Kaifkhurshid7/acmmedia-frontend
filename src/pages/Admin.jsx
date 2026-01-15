@@ -104,7 +104,7 @@ const Admin = () => {
                     <h2>Create & Schedule Event</h2>
                     <p>
                         Add upcoming workshops, hackathons, seminars, or competitions.
-                        These events will be visible to all registered users.
+
                     </p>
 
                     <form onSubmit={handleCreateEvent}>
