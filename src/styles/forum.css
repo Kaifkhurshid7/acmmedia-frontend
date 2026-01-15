@@ -158,14 +158,19 @@
 /* ---------- Responsive ---------- */
 @media (max-width: 600px) {
     .forum-page {
-        padding: 2rem 1.2rem;
+        padding: 2rem 1rem;
     }
 
     .forum-header h2 {
-        font-size: 2rem;
+        font-size: 1.85rem;
     }
 
+    .forum-form,
     .thread-card {
-        padding: 1.6rem;
+        padding: 1.4rem;
+    }
+
+    .forum-form button {
+        width: 100%;
     }
 }

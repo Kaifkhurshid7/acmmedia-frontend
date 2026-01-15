@@ -14,11 +14,13 @@ const PostCard = ({ post, onDelete }) => {
     const isLiked = user && likes.includes(user._id);
     const isAdmin = user && user.role === 'admin';
 
+    // Updated handleLike to alert guests
     const handleLike = async () => {
-        if (!user) return alert('Please login to like posts');
+        if (!user) {
+            return alert('Please login to like this post and join the ACM-XIM-ENVOY community.');
+        }
         try {
             const { data } = await likePost(post._id);
-            // Backend returns the updated likes array
             setLikes(data);
         } catch (err) {
             console.error(err);
@@ -41,7 +43,7 @@ const PostCard = ({ post, onDelete }) => {
     };
 
     const handleAddComment = async (text) => {
-        if (!user) return alert("Login to comment");
+        if (!user) return; // Protected by UI condition below
         try {
             const { data } = await addComment({ postId: post._id, text });
             setComments([data, ...comments]);
@@ -71,38 +73,48 @@ const PostCard = ({ post, onDelete }) => {
     };
 
     return (
-        <div className="post-card">
-            <h3>{post.title}</h3>
-            <p style={{ lineHeight: '1.6' }}>{post.content}</p>
+        <div className="post-card" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '0.8rem' }}>{post.title}</h3>
+            <p style={{ lineHeight: '1.7', opacity: 0.9 }}>{post.content}</p>
 
-            <div className="post-actions" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
+            <div className="post-actions" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1.5rem', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.2rem' }}>
                 <div style={{ display: 'flex', gap: '1rem' }}>
+
+                    {/* Like Button: Now clickable for everyone, but alerts guests */}
                     <button
                         onClick={handleLike}
                         style={{
-                            padding: '0.5rem 1rem',
-                            background: isLiked ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
-                            color: isLiked ? 'black' : 'white'
+                            padding: '0.6rem 1.2rem',
+                            borderRadius: '8px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            // White background only if logged in AND liked
+                            background: isLiked ? '#ffffff' : 'rgba(255,255,255,0.1)',
+                            color: isLiked ? '#000000' : '#ffffff',
+                            fontWeight: '600',
+                            transition: '0.3s',
+                            opacity: !user ? 0.6 : 1 // Slightly faded for guests to indicate limited access
                         }}
                     >
-                        {isLiked ? '❤️' : '🤍'} {likes.length}
+                        🤍 {likes.length}
                     </button>
+
                     <button
                         onClick={toggleComments}
-                        style={{ padding: '0.5rem 1rem', background: 'transparent', border: '1px solid var(--primary)', color: 'var(--primary)' }}
+                        style={{ padding: '0.6rem 1.2rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: '#ffffff', borderRadius: '8px', cursor: 'pointer' }}
                     >
-                        💬 Comments
+                        💬 Discussion
                     </button>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <span style={{ opacity: 0.6, fontSize: '0.9rem' }}>
+                    <span style={{ opacity: 0.5, fontSize: '0.85rem' }}>
                         {new Date(post.createdAt).toLocaleDateString()}
                     </span>
                     {isAdmin && (
                         <button
                             onClick={handleDeletePost}
-                            style={{ background: '#ff4444', color: 'white', padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                            style={{ background: '#dc2626', color: 'white', border: 'none', padding: '0.4rem 0.8rem', fontSize: '0.75rem', borderRadius: '6px', cursor: 'pointer' }}
                         >
                             Delete Post
                         </button>
@@ -111,30 +123,44 @@ const PostCard = ({ post, onDelete }) => {
             </div>
 
             {showComments && (
-                <div className="comments-section" style={{ marginTop: '1.5rem', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '10px' }}>
-                    <CommentBox onAdd={handleAddComment} />
+                <div className="comments-section" style={{ marginTop: '1.5rem', background: 'rgba(0,0,0,0.2)', padding: '1.2rem', borderRadius: '10px' }}>
+                    {user ? (
+                        <CommentBox onAdd={handleAddComment} />
+                    ) : (
+                        <div style={{
+                            padding: '1rem',
+                            textAlign: 'center',
+                            border: '1px dashed rgba(255,255,255,0.2)',
+                            borderRadius: '8px',
+                            color: 'rgba(255,255,255,0.6)',
+                            fontSize: '0.9rem',
+                            marginBottom: '1rem'
+                        }}>
+                            Please <strong>Login</strong> to participate in this discussion.
+                        </div>
+                    )}
 
                     {loadingComments ? (
-                        <p style={{ textAlign: 'center', color: '#aaa' }}>Loading comments...</p>
+                        <p style={{ textAlign: 'center', color: '#aaa' }}>Loading discussions...</p>
                     ) : (
                         <div style={{ marginTop: '1rem' }}>
-                            {comments.length === 0 && <p style={{ color: '#aaa', fontStyle: 'italic' }}>No comments yet.</p>}
+                            {comments.length === 0 && <p style={{ color: '#666', fontStyle: 'italic', textAlign: 'center' }}>No discussions yet.</p>}
                             {comments.map(c => (
-                                <div key={c._id} style={{ padding: '0.8rem', borderBottom: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
+                                <div key={c._id} style={{ padding: '0.8rem 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
-                                        <span style={{ fontWeight: 'bold', color: 'var(--secondary)', fontSize: '0.9rem' }}>
-                                            {c.user?.name || "Unknown User"}
+                                        <span style={{ fontWeight: 'bold', color: '#fff', fontSize: '0.9rem' }}>
+                                            {c.user?.name || "Member"}
                                         </span>
                                         {isAdmin && (
                                             <span
                                                 onClick={() => handleDeleteComment(c._id)}
-                                                style={{ color: '#ff4444', cursor: 'pointer', fontSize: '0.8rem' }}
+                                                style={{ color: '#ff4444', cursor: 'pointer', fontSize: '0.75rem' }}
                                             >
                                                 Delete
                                             </span>
                                         )}
                                     </div>
-                                    <p style={{ margin: 0, fontSize: '0.95rem' }}>{c.text}</p>
+                                    <p style={{ margin: 0, fontSize: '0.95rem', opacity: 0.8 }}>{c.text}</p>
                                 </div>
                             ))}
                         </div>

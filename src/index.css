@@ -20,6 +20,13 @@ body {
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
 }
 
 /* ---------- Navbar ---------- */
@@ -77,6 +84,19 @@ body {
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 5%;
+}
+
+@media (max-width: 768px) {
+
+  .home-page,
+  .login-page,
+  .register-page,
+  .forum-page,
+  .events-page,
+  .admin-page {
+    margin: 1rem auto;
+    padding: 0 1.2rem;
+  }
 }
 
 /* ---------- Forms ---------- */

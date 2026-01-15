@@ -166,7 +166,22 @@
     .admin-analytics {
         padding: 1.8rem;
     }
+
+    .admin-btn-outline {
+        width: 100%;
+        padding: 0.8rem 1rem;
+    }
+
+    .analytics-grid {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .analytics-card {
+        min-width: 100%;
+    }
 }
+
 
 @media (max-width: 360px) {
     .admin-header h1 {
