@@ -25,7 +25,7 @@ const Login = () => {
             <div className="auth-card">
                 {/* Header */}
                 <header>
-                    <h1>Anti</h1>
+                    <h1>ENVOY</h1>
                     <h3>ACM Student Chapter</h3>
                     <p>
                         Official media & engagement platform for ACM student members.

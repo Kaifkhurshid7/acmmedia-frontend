@@ -22,6 +22,7 @@ const Register = () => {
             navigate(formData.role === 'admin' ? '/admin-login' : '/login');
         } catch (err) {
             const message = err?.response?.data?.msg || 'Registration failed.';
+            console.log(err)
             alert(message);
         }
     };
