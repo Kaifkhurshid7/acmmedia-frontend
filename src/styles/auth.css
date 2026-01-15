@@ -1,5 +1,5 @@
 /* =====================================================
-   AUTH PAGES – NEWS / EDITORIAL THEME
+   AUTH PAGES – NEWS / EDITORIAL THEME (RESPONSIVE)
    ===================================================== */
 
 .auth-wrapper {
@@ -8,9 +8,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
+    padding: 2rem 1rem;
 }
 
+/* ---------- Card ---------- */
 .auth-card {
     width: 100%;
     max-width: 420px;
@@ -37,7 +38,7 @@
 }
 
 .auth-header h3 {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: #9a9a9a;
@@ -54,11 +55,11 @@
 .auth-form {
     display: flex;
     flex-direction: column;
-    gap: 1.6rem;
+    gap: 1.4rem;
 }
 
 .form-section h4 {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: #e5e5e5;
@@ -66,46 +67,50 @@
 }
 
 .auth-form label {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #a1a1a1;
     margin-bottom: 0.3rem;
 }
 
+/* Inputs */
 .auth-form input,
 .auth-form select {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.8rem 0.75rem;
     background: #0f0f0f;
     border: 1px solid #1f1f1f;
     border-radius: 6px;
     color: #e5e5e5;
+    font-size: 0.9rem;
 }
 
 .auth-form input::placeholder {
     color: #777;
 }
 
+/* Hints */
 .form-hint {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: #888;
     margin-top: 0.4rem;
 }
 
 .form-warning {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: #cfcfcf;
     margin-top: 0.4rem;
 }
 
 /* ---------- Button ---------- */
 .primary-btn {
-    padding: 0.75rem;
+    padding: 0.85rem;
     background: #ffffff;
     color: #000000;
     font-weight: 600;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    font-size: 0.95rem;
 }
 
 .primary-btn:hover {
@@ -132,9 +137,57 @@
     text-decoration: underline;
 }
 
-/* ---------- Responsive ---------- */
+/* =====================================================
+   MOBILE OPTIMIZATION
+   ===================================================== */
+
 @media (max-width: 520px) {
+    .auth-wrapper {
+        padding: 1.2rem 0.8rem;
+        align-items: flex-start;
+    }
+
     .auth-card {
-        padding: 2rem 1.6rem;
+        padding: 1.8rem 1.4rem;
+        border-radius: 12px;
+    }
+
+    .auth-header h1 {
+        font-size: 1.7rem;
+    }
+
+    .auth-header p {
+        font-size: 0.85rem;
+    }
+
+    .auth-form {
+        gap: 1.2rem;
+    }
+
+    .primary-btn {
+        font-size: 0.9rem;
+        padding: 0.8rem;
+    }
+}
+
+/* =====================================================
+   EXTRA SMALL DEVICES (320px)
+   ===================================================== */
+
+@media (max-width: 360px) {
+    .auth-card {
+        padding: 1.5rem 1.2rem;
+    }
+
+    .auth-header h1 {
+        font-size: 1.55rem;
+    }
+
+    .auth-header h3 {
+        font-size: 0.7rem;
+    }
+
+    .auth-header p {
+        font-size: 0.8rem;
     }
 }
