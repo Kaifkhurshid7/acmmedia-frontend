@@ -16,6 +16,17 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // --- UPDATED DOMAIN RESTRICTION ---
+        const emailLower = formData.email.toLowerCase();
+        const isValidDomain = emailLower.endsWith("@stu.xim.edu.in") || emailLower.endsWith("@xim.edu.in");
+
+        if (!isValidDomain) {
+            alert("Restricted Access: Please use your official university email (@stu.xim.edu.in or @xim.edu.in).");
+            return;
+        }
+        // ----------------------------------
+
         try {
             await signup(formData);
             alert("Registration successful! Please login to continue.");
@@ -53,7 +64,7 @@ const Register = () => {
                         />
                         <input
                             type="email"
-                            placeholder="Institute Email Address"
+                            placeholder="Institute Email Address (@xim.edu.in)"
                             value={formData.email}
                             onChange={(e) =>
                                 setFormData({ ...formData, email: e.target.value })
