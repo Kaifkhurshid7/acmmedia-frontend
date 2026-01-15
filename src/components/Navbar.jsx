@@ -1,6 +1,7 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import logo from './assets/Transparent-Logo-min.png';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
@@ -26,10 +27,7 @@ const Navbar = () => {
             <div className="nav-container">
                 {/* BRAND */}
                 <Link to="/" className="nav-brand" onClick={() => setOpen(false)}>
-                    <div className="brand-wrapper">
-                        <span className="brand-title">ACM-XIM-ENVOY</span>
-                        <span className="brand-subtitle">EDITORIAL & NEWS</span>
-                    </div>
+                    <img src={logo} alt="ACM XIM Logo" className="navbar-logo" />
                 </Link>
 
                 <div className="nav-right-group">
