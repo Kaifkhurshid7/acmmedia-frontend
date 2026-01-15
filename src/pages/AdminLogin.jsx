@@ -36,7 +36,7 @@ const AdminLogin = () => {
             <div className="auth-card admin-auth">
                 <header>
                     <h1>Admin Portal</h1>
-                    <h3>ACM-XIM-ENVOY • ACM Student Chapter</h3>
+                    <h3>ACM-XIM-ENVOY • ACM XIM Student Chapter</h3>
                     <p>
                         This section is restricted to officially appointed ACM chapter
                         coordinators and core committee members. All access attempts
@@ -74,7 +74,7 @@ const AdminLogin = () => {
                     <p style={{ fontSize: '0.8rem' }}>
                         ⚠ Unauthorized access is strictly prohibited.
                         If you believe you should have admin access, please contact
-                        the ACM Student Chapter leadership.
+                        the ACM XIM CORE TEAM.
                     </p>
 
                     <span
