@@ -189,6 +189,7 @@ const Admin = () => {
 
             {/* ANALYTICS */}
             <section className="admin-analytics">
+                <h2>Wroking On it</h2>
                 <h2>Platform Insights & Overview</h2>
                 <p>
                     A high-level overview of platform engagement and user activity.
@@ -198,16 +199,16 @@ const Admin = () => {
                 <div className="analytics-grid">
                     <div className="analytics-card">
                         <h4>User Engagement</h4>
-                        <p>👍 Likes: 120+</p>
-                        <p>💬 Comments: 45+</p>
-                        <p>📰 Posts Published: 30+</p>
+                        <p> Likes: 120+</p>
+                        <p> Comments: 45+</p>
+                        <p>Posts Published: 30+</p>
                     </div>
 
                     <div className="analytics-card">
                         <h4>User Base</h4>
-                        <p>👥 Members: 200+</p>
-                        <p>🛡️ Admins: 2</p>
-                        <p>🕒 Active Sessions: High</p>
+                        <p>Members: 200+</p>
+                        <p> Admins: 2</p>
+                        <p> Admin status : High</p>
                     </div>
                 </div>
             </section>
