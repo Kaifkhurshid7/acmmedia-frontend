@@ -214,22 +214,28 @@
 
 .news-date {
     font-size: 0.8rem;
-    color: #666;
+    color: #f4f4f4;
 }
 
 .news-link {
     background: var(--primary);
-    color: #000;
+    color: #ffffff;
     padding: 0.4rem 1rem;
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
     text-decoration: none;
     transition: background 0.2s;
+    text-decoration: none;
+    border: 1px solid #ffffff;
+    border-radius: 6px;
+    transition: all 0.25s ease;
+    background: transparent;
 }
 
+
 .news-link:hover {
-    background: #fff;
+    /* background: #a3a3a3; */
 }
 
 .news-loading,
