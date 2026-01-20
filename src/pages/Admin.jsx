@@ -3,8 +3,18 @@ import { createPost } from '../api/posts';
 import { createEvent } from '../api/events';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useSocket } from '../context/SocketContext';
 
 const Admin = () => {
+    const [stats, setStats] = useState({
+        likes: 120,
+        comments: 45,
+        posts: 30,
+        members: 200,
+        admins: 2
+    });
+    const socket = useSocket();
+
     const [postData, setPostData] = useState({ title: '', content: '' });
     const [eventData, setEventData] = useState({
         title: '',
@@ -16,6 +26,19 @@ const Admin = () => {
 
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('analytics:update', (data) => {
+            console.log('Real-time analytics received:', data);
+            setStats(prev => ({ ...prev, ...data }));
+        });
+
+        return () => {
+            socket.off('analytics:update');
+        };
+    }, [socket]);
 
     // Protect admin route
     useEffect(() => {
@@ -187,25 +210,23 @@ const Admin = () => {
 
             {/* ANALYTICS */}
             <section className="admin-analytics">
-                <h2>Wroking On it</h2>
                 <h2>Platform Insights & Overview</h2>
                 <p>
                     A high-level overview of platform engagement and user activity.
-                    (Static preview – can be connected to real analytics later.)
                 </p>
 
                 <div className="analytics-grid">
                     <div className="analytics-card">
                         <h4>User Engagement</h4>
-                        <p> Likes: 120+</p>
-                        <p> Comments: 45+</p>
-                        <p>Posts Published: 30+</p>
+                        <p> Likes: {stats.likes}+</p>
+                        <p> Comments: {stats.comments}+</p>
+                        <p>Posts Published: {stats.posts}+</p>
                     </div>
 
                     <div className="analytics-card">
                         <h4>User Base</h4>
-                        <p>Members: 200+</p>
-                        <p> Admins: 2</p>
+                        <p>Members: {stats.members}+</p>
+                        <p> Admins: {stats.admins}</p>
                         <p> Admin status : High</p>
                     </div>
                 </div>

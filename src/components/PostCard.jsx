@@ -3,10 +3,28 @@ import { AuthContext } from '../context/AuthContext';
 import { likePost, deletePost } from '../api/posts';
 import { fetchComments, addComment, deleteComment } from '../api/comments';
 import CommentBox from './CommentBox';
+import { useSocket } from '../context/SocketContext';
+import { useEffect } from 'react';
 
 const PostCard = ({ post, onDelete }) => {
     const { user } = useContext(AuthContext);
     const [likes, setLikes] = useState(post.likes || []);
+    const socket = useSocket();
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('post:like-update', (data) => {
+            if (data.postId === post._id) {
+                console.log('Real-time like update received for post:', post._id, data.likes);
+                setLikes(data.likes);
+            }
+        });
+
+        return () => {
+            socket.off('post:like-update');
+        };
+    }, [socket, post._id]);
     const [comments, setComments] = useState([]);
     const [showComments, setShowComments] = useState(false);
     const [loadingComments, setLoadingComments] = useState(false);

@@ -1,15 +1,36 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { fetchThreads, createThread, deleteThread, replyToThread } from '../api/forum';
 import { AuthContext } from '../context/AuthContext';
+import { useSocket } from '../context/SocketContext';
 
 const Forum = () => {
     const [threads, setThreads] = useState([]);
     const [newThread, setNewThread] = useState({ title: '', description: '' });
     const { user } = useContext(AuthContext);
+    const socket = useSocket();
 
     useEffect(() => {
         fetchThreads().then(res => setThreads(res.data));
     }, []);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('forum:new-reply', (data) => {
+            console.log('Real-time reply received:', data);
+            setThreads(prevThreads =>
+                prevThreads.map(thread =>
+                    thread._id === data.threadId
+                        ? { ...thread, replies: data.replies }
+                        : thread
+                )
+            );
+        });
+
+        return () => {
+            socket.off('forum:new-reply');
+        };
+    }, [socket]);
 
     const handleCreateThread = async (e) => {
         e.preventDefault();
