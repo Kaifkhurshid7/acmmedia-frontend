@@ -14,22 +14,24 @@ const PostCard = ({ post, onDelete }) => {
     useEffect(() => {
         if (!socket) return;
 
-        socket.on('post:like-update', (data) => {
+        const onLikeUpdate = (data) => {
             if (data.postId === post._id) {
                 console.log('Real-time like update received for post:', post._id, data.likes);
                 setLikes(data.likes);
             }
-        });
+        };
+
+        socket.on('post:like-update', onLikeUpdate);
 
         return () => {
-            socket.off('post:like-update');
+            socket.off('post:like-update', onLikeUpdate);
         };
     }, [socket, post._id]);
     const [comments, setComments] = useState([]);
     const [showComments, setShowComments] = useState(false);
     const [loadingComments, setLoadingComments] = useState(false);
 
-    const isLiked = user && likes.includes(user._id);
+    const isLiked = user && Array.isArray(likes) && likes.includes(user._id);
     const isAdmin = user && user.role === 'admin';
 
     // Updated handleLike to alert guests

@@ -7,6 +7,7 @@ const Forum = () => {
     const [threads, setThreads] = useState([]);
     const [newThread, setNewThread] = useState({ title: '', description: '' });
     const { user } = useContext(AuthContext);
+    const [isConnected, setIsConnected] = useState(false);
     const socket = useSocket();
 
     useEffect(() => {
@@ -16,7 +17,9 @@ const Forum = () => {
     useEffect(() => {
         if (!socket) return;
 
-        socket.on('forum:new-reply', (data) => {
+        setIsConnected(socket.connected);
+
+        const onNewReply = (data) => {
             console.log('Real-time reply received:', data);
             setThreads(prevThreads =>
                 prevThreads.map(thread =>
@@ -25,10 +28,23 @@ const Forum = () => {
                         : thread
                 )
             );
-        });
+        };
+
+        const handleConnect = () => setIsConnected(true);
+        const handleDisconnect = () => setIsConnected(false);
+
+        socket.on('connect', handleConnect);
+        socket.on('disconnect', handleDisconnect);
+        socket.on('forum:new-reply', onNewReply);
+
+        if (socket.connected) {
+            setIsConnected(true);
+        }
 
         return () => {
-            socket.off('forum:new-reply');
+            socket.off('connect', handleConnect);
+            socket.off('disconnect', handleDisconnect);
+            socket.off('forum:new-reply', onNewReply);
         };
     }, [socket]);
 
@@ -57,7 +73,29 @@ const Forum = () => {
         <div className="forum-page">
             {/* Header */}
             <header className="forum-header">
-                <h2>Discussion Forum</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.6rem' }}>
+                    <h2 style={{ margin: 0 }}>Discussion Forum</h2>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        fontSize: '0.75rem',
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: '20px',
+                        background: isConnected ? 'rgba(0, 255, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)',
+                        color: isConnected ? '#4ade80' : '#f87171',
+                        border: `1px solid ${isConnected ? '#4ade8055' : '#f8717155'}`
+                    }}>
+                        <span style={{
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            background: isConnected ? '#4ade80' : '#f87171',
+                            boxShadow: isConnected ? '0 0 8px #4ade80' : 'none'
+                        }}></span>
+                        {isConnected ? 'LIVE' : 'DISCONNECTED'}
+                    </div>
+                </div>
                 <p>
                     A collaborative space for academic, technical, and chapter-related
                     discussions. Ask questions, share insights, and learn together.

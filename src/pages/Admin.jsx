@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { createPost } from '../api/posts';
+import { createPost, fetchPosts } from '../api/posts';
 import { createEvent } from '../api/events';
+import { fetchThreads } from '../api/forum';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 
 const Admin = () => {
     const [stats, setStats] = useState({
-        likes: 120,
-        comments: 45,
-        posts: 30,
-        members: 200,
-        admins: 2
+        likes: 0,
+        comments: 0,
+        posts: 0,
+        members: 0,
+        admins: 0
     });
+    const [loading, setLoading] = useState(true);
+    const [isConnected, setIsConnected] = useState(false);
     const socket = useSocket();
 
     const [postData, setPostData] = useState({ title: '', content: '' });
@@ -27,16 +30,73 @@ const Admin = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    // Fallback: Fetch initial data and count locally
+    useEffect(() => {
+        const fetchInitialStats = async () => {
+            try {
+                const [postsRes, threadsRes] = await Promise.all([
+                    fetchPosts(),
+                    fetchThreads()
+                ]);
+
+                const posts = postsRes.data || [];
+                const threads = threadsRes.data || [];
+
+                const localStats = {
+                    posts: posts.length,
+                    likes: posts.reduce((acc, p) => acc + (p.likes?.length || 0), 0),
+                    comments: threads.reduce((acc, t) => acc + (t.replies?.length || 0), 0),
+                    // We can't fetch all users for privacy/security, 
+                    // so we wait for socket to provide membership count
+                    members: 0
+                };
+
+                setStats(prev => ({ ...prev, ...localStats }));
+                // Stop loading if we have fallback data
+                setLoading(false);
+            } catch (err) {
+                console.error("Fallback analytics fetch failed", err);
+            }
+        };
+
+        fetchInitialStats();
+    }, []);
+
     useEffect(() => {
         if (!socket) return;
 
-        socket.on('analytics:update', (data) => {
+        setIsConnected(socket.connected);
+
+        const onConnect = () => {
+            setIsConnected(true);
+            socket.emit('analytics:request');
+        };
+        const onDisconnect = () => setIsConnected(false);
+        const onAnalyticsUpdate = (data) => {
             console.log('Real-time analytics received:', data);
+            // Prioritize backend data over client-side counts
             setStats(prev => ({ ...prev, ...data }));
-        });
+            setLoading(false);
+        };
+
+        socket.on('connect', onConnect);
+        socket.on('disconnect', onDisconnect);
+        socket.on('analytics:update', onAnalyticsUpdate);
+
+        if (socket.connected) {
+            setIsConnected(true);
+            socket.emit('analytics:request');
+        }
+
+        const timeout = setTimeout(() => {
+            setLoading(false);
+        }, 5000); // 5s timeout for initial sync
 
         return () => {
-            socket.off('analytics:update');
+            socket.off('connect', onConnect);
+            socket.off('disconnect', onDisconnect);
+            socket.off('analytics:update', onAnalyticsUpdate);
+            clearTimeout(timeout);
         };
     }, [socket]);
 
@@ -209,27 +269,81 @@ const Admin = () => {
             </section>
 
             {/* ANALYTICS */}
-            <section className="admin-analytics">
-                <h2>Platform Insights & Overview</h2>
+            <section className="admin-analytics" style={{ position: 'relative' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <h2>Platform Insights & Overview</h2>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            fontSize: '0.75rem',
+                            padding: '0.2rem 0.6rem',
+                            borderRadius: '20px',
+                            background: isConnected ? 'rgba(0, 255, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)',
+                            color: isConnected ? '#4ade80' : '#f87171',
+                            border: `1px solid ${isConnected ? '#4ade8055' : '#f8717155'}`
+                        }}>
+                            <span style={{
+                                width: '6px',
+                                height: '6px',
+                                borderRadius: '50%',
+                                background: isConnected ? '#4ade80' : '#f87171',
+                                boxShadow: isConnected ? '0 0 8px #4ade80' : 'none'
+                            }}></span>
+                            {isConnected ? 'LIVE' : 'DISCONNECTED'}
+                        </div>
+                    </div>
+                </div>
+
                 <p>
                     A high-level overview of platform engagement and user activity.
                 </p>
 
-                <div className="analytics-grid">
-                    <div className="analytics-card">
-                        <h4>User Engagement</h4>
-                        <p> Likes: {stats.likes}+</p>
-                        <p> Comments: {stats.comments}+</p>
-                        <p>Posts Published: {stats.posts}+</p>
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '3rem', opacity: 0.6 }}>
+                        <div className="loader-dots">Synchronizing analytics...</div>
                     </div>
+                ) : (
+                    <div className="analytics-grid" style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '1.5rem',
+                        marginTop: '2rem'
+                    }}>
+                        <div className="analytics-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div style={{ fontSize: '1.5rem' }}>👥</div>
+                            <h4>Total Users</h4>
+                            <p style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff', margin: 0 }}>
+                                {stats.members || 'Syncing...'}
+                            </p>
+                        </div>
 
-                    <div className="analytics-card">
-                        <h4>User Base</h4>
-                        <p>Members: {stats.members}+</p>
-                        <p> Admins: {stats.admins}</p>
-                        <p> Admin status : High</p>
+                        <div className="analytics-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div style={{ fontSize: '1.5rem' }}>📝</div>
+                            <h4>Total Posts</h4>
+                            <p style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff', margin: 0 }}>
+                                {stats.posts}
+                            </p>
+                        </div>
+
+                        <div className="analytics-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div style={{ fontSize: '1.5rem' }}>💬</div>
+                            <h4>Total Comments</h4>
+                            <p style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff', margin: 0 }}>
+                                {stats.comments}
+                            </p>
+                        </div>
+
+                        <div className="analytics-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div style={{ fontSize: '1.5rem' }}>🤍</div>
+                            <h4>Total Likes</h4>
+                            <p style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff', margin: 0 }}>
+                                {stats.likes}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                )}
             </section>
 
         </div>
