@@ -312,7 +312,7 @@ const Admin = () => {
                         marginTop: '2rem'
                     }}>
                         <div className="analytics-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <div style={{ fontSize: '1.5rem' }}>👥</div>
+                            <div style={{ fontSize: '1.5rem' }}></div>
                             <h4>Total Users</h4>
                             <p style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff', margin: 0 }}>
                                 {stats.members || 'Syncing...'}
@@ -320,7 +320,7 @@ const Admin = () => {
                         </div>
 
                         <div className="analytics-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <div style={{ fontSize: '1.5rem' }}>📝</div>
+                            <div style={{ fontSize: '1.5rem' }}></div>
                             <h4>Total Posts</h4>
                             <p style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff', margin: 0 }}>
                                 {stats.posts}
@@ -328,7 +328,7 @@ const Admin = () => {
                         </div>
 
                         <div className="analytics-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <div style={{ fontSize: '1.5rem' }}>💬</div>
+                            <div style={{ fontSize: '1.5rem' }}></div>
                             <h4>Total Comments</h4>
                             <p style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff', margin: 0 }}>
                                 {stats.comments}
@@ -336,7 +336,7 @@ const Admin = () => {
                         </div>
 
                         <div className="analytics-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <div style={{ fontSize: '1.5rem' }}>🤍</div>
+                            <div style={{ fontSize: '1.5rem' }}></div>
                             <h4>Total Likes</h4>
                             <p style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff', margin: 0 }}>
                                 {stats.likes}
