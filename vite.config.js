@@ -8,7 +8,7 @@ export default defineConfig({
     allowedHosts: ['sk96ps-5173.csb.app'],
     proxy: {
       '/api': {
-        target: 'https://acm-xim-envoy-backend.onrender.com',
+        target: 'https://acmmedia-backend.onrender.com',
         changeOrigin: true,
         secure: false,
       },

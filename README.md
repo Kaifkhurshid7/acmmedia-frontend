@@ -123,7 +123,7 @@ The frontend now supports Vite environment variables for backend configuration.
 Create a local `.env` file in the project root:
 
 ```env
-VITE_API_BASE_URL=https://acmmedia-backend.onrender.com/api
+VITE_API_BASE_URL=https://acmmedia-backend.onrender.com/api/v1
 VITE_SOCKET_URL=https://acmmedia-backend.onrender.com
 ```
 

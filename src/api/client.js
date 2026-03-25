@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 const apiBaseUrl =
-    import.meta.env.VITE_API_BASE_URL || 'https://acmmedia-backend.onrender.com/api';
+    import.meta.env.VITE_API_BASE_URL ||
+    (import.meta.env.DEV
+        ? '/api/v1'
+        : 'https://acmmedia-backend.onrender.com/api/v1');
 
 const client = axios.create({
     baseURL: apiBaseUrl
