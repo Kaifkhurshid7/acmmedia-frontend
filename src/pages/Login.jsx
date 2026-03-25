@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { extractErrorMessage } from '../utils/api';
 
 const Login = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
@@ -13,7 +14,7 @@ const Login = () => {
             await login(formData.email, formData.password);
             navigate('/');
         } catch (err) {
-            alert("Login failed. Please check your credentials.");
+            alert(extractErrorMessage(err, "Login failed. Please check your credentials."));
         }
     };
 

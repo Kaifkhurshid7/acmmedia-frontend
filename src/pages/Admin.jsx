@@ -5,6 +5,7 @@ import { fetchThreads } from '../api/forum';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
+import { extractArray, extractErrorMessage } from '../utils/api';
 
 const Admin = () => {
     const [stats, setStats] = useState({
@@ -16,6 +17,8 @@ const Admin = () => {
     });
     const [loading, setLoading] = useState(true);
     const [isConnected, setIsConnected] = useState(false);
+    const [submittingPost, setSubmittingPost] = useState(false);
+    const [submittingEvent, setSubmittingEvent] = useState(false);
     const socket = useSocket();
 
     const [postData, setPostData] = useState({ title: '', content: '' });
@@ -30,32 +33,34 @@ const Admin = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    const refreshFallbackStats = async () => {
+        const [postsRes, threadsRes] = await Promise.all([
+            fetchPosts(),
+            fetchThreads()
+        ]);
+
+        const posts = extractArray(postsRes.data, ['posts', 'data']);
+        const threads = extractArray(threadsRes.data, ['threads', 'data']);
+
+        const localStats = {
+            posts: posts.length,
+            likes: posts.reduce((acc, p) => acc + (p.likes?.length || 0), 0),
+            comments: threads.reduce((acc, t) => acc + (t.replies?.length || 0), 0),
+            members: 0
+        };
+
+        setStats(prev => ({ ...prev, ...localStats }));
+    };
+
     // Fallback: Fetch initial data and count locally
     useEffect(() => {
         const fetchInitialStats = async () => {
             try {
-                const [postsRes, threadsRes] = await Promise.all([
-                    fetchPosts(),
-                    fetchThreads()
-                ]);
-
-                const posts = postsRes.data || [];
-                const threads = threadsRes.data || [];
-
-                const localStats = {
-                    posts: posts.length,
-                    likes: posts.reduce((acc, p) => acc + (p.likes?.length || 0), 0),
-                    comments: threads.reduce((acc, t) => acc + (t.replies?.length || 0), 0),
-                    // We can't fetch all users for privacy/security, 
-                    // so we wait for socket to provide membership count
-                    members: 0
-                };
-
-                setStats(prev => ({ ...prev, ...localStats }));
-                // Stop loading if we have fallback data
+                await refreshFallbackStats();
                 setLoading(false);
             } catch (err) {
                 console.error("Fallback analytics fetch failed", err);
+                setLoading(false);
             }
         };
 
@@ -109,17 +114,23 @@ const Admin = () => {
     const handleCreatePost = async (e) => {
         e.preventDefault();
         try {
+            setSubmittingPost(true);
             await createPost(postData);
+            await refreshFallbackStats();
             alert('Post created successfully!');
             setPostData({ title: '', content: '' });
         } catch (err) {
-            alert('Failed to create post.');
+            console.error(err);
+            alert(extractErrorMessage(err, 'Failed to create post.'));
+        } finally {
+            setSubmittingPost(false);
         }
     };
 
     const handleCreateEvent = async (e) => {
         e.preventDefault();
         try {
+            setSubmittingEvent(true);
             await createEvent(eventData);
             alert('Event created successfully!');
             setEventData({
@@ -130,7 +141,10 @@ const Admin = () => {
                 registrationLink: ''
             });
         } catch (err) {
-            alert('Failed to create event.');
+            console.error(err);
+            alert(extractErrorMessage(err, 'Failed to create event.'));
+        } finally {
+            setSubmittingEvent(false);
         }
     };
 
@@ -176,8 +190,8 @@ const Admin = () => {
                             required
                         />
 
-                        <button type="submit">
-                            Publish News
+                        <button type="submit" disabled={submittingPost}>
+                            {submittingPost ? 'Publishing...' : 'Publish News'}
                         </button>
                     </form>
                 </div>
@@ -244,8 +258,8 @@ const Admin = () => {
                             required
                         />
 
-                        <button type="submit">
-                            Add Event
+                        <button type="submit" disabled={submittingEvent}>
+                            {submittingEvent ? 'Saving Event...' : 'Add Event'}
                         </button>
                     </form>
                 </div>

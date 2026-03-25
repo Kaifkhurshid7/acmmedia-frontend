@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from '../api/auth';
+import { extractErrorMessage, extractObject } from '../utils/api';
 
 const AdminLogin = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
@@ -11,11 +12,18 @@ const AdminLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await login(formData.email, formData.password);
+            const loggedInUser = await login(formData.email, formData.password);
+
+            if (loggedInUser?.role === 'admin') {
+                navigate('/admin');
+                return;
+            }
 
             // Verify admin role
             const { data } = await getCurrentUser();
-            if (data.role !== 'admin') {
+            const currentUser = extractObject(data, ['user', 'data']);
+
+            if (currentUser?.role !== 'admin') {
                 alert("Access Denied: Administrative privileges required.");
                 logout();
             } else {
@@ -23,7 +31,7 @@ const AdminLogin = () => {
             }
         } catch (err) {
             console.error(err);
-            alert("Admin login failed. Please verify your credentials.");
+            alert(extractErrorMessage(err, "Admin login failed. Please verify your credentials."));
         }
     };
 

@@ -5,6 +5,7 @@ import { fetchComments, addComment, deleteComment } from '../api/comments';
 import CommentBox from './CommentBox';
 import { useSocket } from '../context/SocketContext';
 import { useEffect } from 'react';
+import { extractArray, extractObject } from '../utils/api';
 
 const PostCard = ({ post, onDelete }) => {
     const { user } = useContext(AuthContext);
@@ -41,7 +42,7 @@ const PostCard = ({ post, onDelete }) => {
         }
         try {
             const { data } = await likePost(post._id);
-            setLikes(data);
+            setLikes(extractArray(data, ['likes', 'data']));
         } catch (err) {
             console.error(err);
         }
@@ -52,7 +53,7 @@ const PostCard = ({ post, onDelete }) => {
             setLoadingComments(true);
             try {
                 const { data } = await fetchComments(post._id);
-                setComments(data);
+                setComments(extractArray(data, ['comments', 'data']));
             } catch (err) {
                 console.error(err);
             } finally {
@@ -66,7 +67,10 @@ const PostCard = ({ post, onDelete }) => {
         if (!user) return; // Protected by UI condition below
         try {
             const { data } = await addComment({ postId: post._id, text });
-            setComments([data, ...comments]);
+            const newComment = extractObject(data, ['comment', 'data']);
+            if (newComment) {
+                setComments([newComment, ...comments]);
+            }
         } catch (err) {
             console.error(err);
         }

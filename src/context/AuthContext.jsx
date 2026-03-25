@@ -1,7 +1,9 @@
 import React, { createContext, useState, useEffect } from "react";
 import * as authApi from "../api/auth";
+import { extractObject, extractToken } from "../utils/api";
 
 export const AuthContext = createContext();
+export const useAuth = () => React.useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -13,9 +15,10 @@ export const AuthProvider = ({ children }) => {
             if (token) {
                 try {
                     const { data } = await authApi.getCurrentUser();
-                    setUser(data);
+                    setUser(extractObject(data, ["user", "data"]));
                 } catch (err) {
                     localStorage.removeItem("token");
+                    setUser(null);
                 }
             }
             setLoading(false);
@@ -25,12 +28,23 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         const { data } = await authApi.login({ email, password });
-        localStorage.setItem("token", data.token);
+        const token = extractToken(data);
+
+        if (!token) {
+            throw new Error("Login succeeded but no token was returned.");
+        }
+
+        localStorage.setItem("token", token);
+
         try {
             const { data: me } = await authApi.getCurrentUser();
-            setUser(me);
+            const normalizedUser = extractObject(me, ["user", "data"]);
+            setUser(normalizedUser);
+            return normalizedUser;
         } catch (err) {
-            setUser({ token: data.token });
+            const fallbackUser = extractObject(data, ["user", "data"]) || { token };
+            setUser(fallbackUser);
+            return fallbackUser;
         }
     };
 

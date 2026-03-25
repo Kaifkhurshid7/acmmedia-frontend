@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { signup } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
+import { extractErrorMessage } from '../utils/api';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -32,9 +33,8 @@ const Register = () => {
             alert("Registration successful! Please login to continue.");
             navigate(formData.role === 'admin' ? '/admin-login' : '/login');
         } catch (err) {
-            const message = err?.response?.data?.msg || 'Registration failed.';
-            console.log(err)
-            alert(message);
+            console.error(err);
+            alert(extractErrorMessage(err, 'Registration failed.'));
         }
     };
 

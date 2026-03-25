@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchExternalNews } from '../api/news';
 import '../styles/techpulse.css';
+import { extractArray } from '../utils/api';
 
 const TechPulse = ({ mode = 'grid' }) => {
     const [news, setNews] = useState([]);
@@ -11,8 +12,7 @@ const TechPulse = ({ mode = 'grid' }) => {
         const fetchNews = async () => {
             try {
                 const res = await fetchExternalNews();
-                // Ensure we get an array
-                const data = Array.isArray(res.data) ? res.data : [];
+                const data = extractArray(res.data, ['articles', 'news', 'data']);
                 setNews(data);
                 setLoading(false);
             } catch (err) {
@@ -60,6 +60,7 @@ const TechPulse = ({ mode = 'grid' }) => {
     // --- RENDER GRID ---
     if (loading) return <div className="news-loading">Loading Global Tech News...</div>;
     if (error) return <div className="news-error">{error}</div>;
+    if (news.length === 0) return <div className="news-loading">No global tech news available right now.</div>;
 
     return (
         <div className="news-page">

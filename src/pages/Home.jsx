@@ -4,16 +4,34 @@ import { AuthContext } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
 import TechPulse from "../components/TechPulse";
 import { useSocket } from "../context/SocketContext";
+import { extractArray } from "../utils/api";
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
+    const [loadingPosts, setLoadingPosts] = useState(true);
+    const [postsError, setPostsError] = useState('');
     const { user } = useContext(AuthContext);
 
     const [isConnected, setIsConnected] = useState(false);
     const socket = useSocket();
 
     useEffect(() => {
-        fetchPosts().then(res => setPosts(res.data));
+        const loadPosts = async () => {
+            try {
+                setLoadingPosts(true);
+                setPostsError('');
+                const res = await fetchPosts();
+                setPosts(extractArray(res.data, ['posts', 'data']));
+            } catch (err) {
+                console.error('Failed to load posts', err);
+                setPosts([]);
+                setPostsError('Unable to load chapter updates right now.');
+            } finally {
+                setLoadingPosts(false);
+            }
+        };
+
+        loadPosts();
     }, []);
 
     useEffect(() => {
@@ -77,7 +95,15 @@ export default function Home() {
 
             {/* Feed */}
             <section className="home-feed">
-                {posts.length === 0 ? (
+                {loadingPosts ? (
+                    <p className="home-empty">
+                        Loading latest chapter updates...
+                    </p>
+                ) : postsError ? (
+                    <p className="home-empty">
+                        {postsError}
+                    </p>
+                ) : posts.length === 0 ? (
                     <p className="home-empty">
                         No updates available at the moment.
                     </p>
