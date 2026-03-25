@@ -1,9 +1,10 @@
 import axios from 'axios';
 
+const apiBaseUrl =
+    import.meta.env.VITE_API_BASE_URL || 'https://acmmedia-backend.onrender.com/api';
+
 const client = axios.create({
-    baseURL: 'https://acmmedia-backend.onrender.com/api'
-    // baseURL: 'http://localhost:5000/api'
-    
+    baseURL: apiBaseUrl
 });
 
 // Add interceptor to include token in requests

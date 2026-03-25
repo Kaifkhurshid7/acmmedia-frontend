@@ -1,21 +1,20 @@
-# ACM Media Frontend
+# ACM-XIM-ENVOY Frontend
 
-Frontend for `ACM-XIM-ENVOY`, the ACM student chapter media and engagement platform. This app provides the public/member-facing UI for chapter announcements, events, discussion threads, external tech news, authentication, and admin publishing tools.
+`ACM-XIM-ENVOY` is the frontend for the ACM student chapter media and engagement platform. It gives members and admins a single place to view announcements, browse events, join discussions, read global tech news, and manage chapter content.
 
-## Overview
+## What This Project Does
 
-The project is built with React and Vite and connects to a hosted backend API and Socket.IO server. It is designed for ACM chapter communication, with separate member and admin flows.
+This application is the public and authenticated UI layer for the ACM chapter platform. It connects to a backend API for data and a Socket.IO server for realtime updates.
 
-## Features
+Core flows include:
 
-- Chapter news feed with post cards and live connection status
-- Student registration and login flow
-- Admin-only login and admin dashboard
-- Discussion forum with thread creation, replies, and realtime reply updates
-- Events listing with registration links
-- External tech news feed via the `TechPulse` component
-- JWT-based authenticated API requests
-- Realtime analytics and connectivity indicators using Socket.IO
+- member registration and login
+- admin-only authentication and dashboard access
+- chapter announcements on the home feed
+- forum discussions with live replies
+- events discovery and registration links
+- external technology news through `TechPulse`
+- realtime admin analytics and connection status indicators
 
 ## Tech Stack
 
@@ -24,68 +23,57 @@ The project is built with React and Vite and connects to a hosted backend API an
 - React Router DOM 6
 - Axios
 - Socket.IO Client
-- CSS modules/files under `src/styles`
+- plain CSS styles under `src/styles`
+- Vercel SPA rewrites via `vercel.json`
 
-## Project Structure
+## Main Screens
+
+| Route | Description |
+| --- | --- |
+| `/` | Main chapter feed with announcements and live status |
+| `/login` | Member sign-in |
+| `/register` | Registration for members and admins |
+| `/news` | External tech news grid |
+| `/events` | Chapter events and registration links |
+| `/forum` | Community discussions and replies |
+| `/admin-login` | Restricted admin login |
+| `/admin` | Admin dashboard for publishing and analytics |
+
+## Folder Structure
 
 ```text
 src/
-  api/         Axios API helpers for auth, posts, forum, events, comments, news
-  components/  Shared UI components such as Navbar, PostCard, TechPulse
-  context/     Auth and Socket providers
+  api/         API wrapper functions for auth, posts, forum, events, news
+  components/  Shared UI building blocks
+  context/     Auth and socket providers
   pages/       Route-level pages
-  styles/      Page and component styles
+  styles/      Global and page-specific styles
+public/        Static assets
+dist/          Production build output
 ```
 
-## Routes
-
-| Route | Purpose |
-| --- | --- |
-| `/` | Home feed with chapter posts and live status |
-| `/login` | Member login |
-| `/register` | Student/admin registration |
-| `/forum` | Community discussion threads |
-| `/events` | Events listing |
-| `/news` | Global tech news page |
-| `/admin-login` | Admin authentication |
-| `/admin` | Admin dashboard for posts, events, and analytics |
-
-## API Integration
-
-The frontend currently points to the deployed backend:
-
-- REST API base URL: `https://acmmedia-backend.onrender.com/api`
-- Socket server URL: `https://acmmedia-backend.onrender.com`
-
-These values are currently hardcoded in:
-
-- `src/api/client.js`
-- `src/context/SocketContext.jsx`
-
-For local backend development, switch those values to your local server endpoints.
-
-## Local Development
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ recommended
+- Node.js 18 or newer recommended
 - npm
 
-### Install
+### Install dependencies
 
 ```bash
 npm install
 ```
 
-### Start the development server
+### Run locally
 
 ```bash
 npm run dev
 ```
 
-The app will start on the default Vite development port, usually `http://localhost:5173`.
+Vite will usually start the app at `http://localhost:5173`.
 
-### Production build
+### Build for production
 
 ```bash
 npm run build
@@ -97,50 +85,89 @@ npm run build
 npm run preview
 ```
 
-## Authentication Notes
-
-- JWT tokens are stored in `localStorage`
-- Authenticated requests automatically include `Authorization: Bearer <token>`
-- Registration is restricted to official university email domains:
-  - `@stu.xim.edu.in`
-  - `@xim.edu.in`
-- Admin access is further validated through the authenticated user role
-
-## Realtime Behavior
-
-Socket.IO is used for:
-
-- forum reply updates
-- admin analytics updates
-- live connection state indicators on key pages
-
-If the socket server is unavailable, the app still attempts to render fallback data where possible.
-
-## Deployment
-
-This repository includes a `vercel.json` rewrite so client-side routes resolve correctly when deployed as a single-page application.
-
 ## Available Scripts
 
-- `npm run dev` - start Vite in development mode
-- `npm run build` - create a production build
-- `npm run preview` - preview the production build locally
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Vite development server |
+| `npm run build` | Generate the production build |
+| `npm run preview` | Preview the production build locally |
 
-## Related Backend Expectations
+## Backend Integration
 
-The frontend expects the backend to expose endpoints such as:
+The frontend currently expects a backend that provides:
+
+- authentication endpoints
+- posts and likes
+- forum threads and replies
+- events management
+- external news aggregation
+- Socket.IO events for forum and analytics updates
+
+### REST endpoints used by the app
 
 - `/auth/login`
 - `/auth/register`
 - `/auth/me`
 - `/posts`
+- `/posts/like/:id`
 - `/forum`
 - `/forum/reply/:id`
 - `/events`
 - `/external-news`
 
-It also expects Socket.IO events for analytics and forum updates.
+## Environment Configuration
 
-## Current Status
+The frontend now supports Vite environment variables for backend configuration.
 
-This repo is the frontend application only. The old README content referenced a combined full-stack layout with separate `backend/` and `frontend/` folders, but this repository contains the frontend app directly at the root.
+Create a local `.env` file in the project root:
+
+```env
+VITE_API_BASE_URL=https://acmmedia-backend.onrender.com/api
+VITE_SOCKET_URL=https://acmmedia-backend.onrender.com
+```
+
+You can use `.env.example` as the starting point.
+
+### Environment variables
+
+| Variable | Purpose |
+| --- | --- |
+| `VITE_API_BASE_URL` | Base URL for Axios API requests |
+| `VITE_SOCKET_URL` | Base URL for Socket.IO connection |
+
+If these values are not set, the app falls back to the current Render backend URLs.
+
+## Backend Configuration Notes
+
+`vite.config.js` still includes a dev proxy for `/api`. That is fine, but the app itself now uses environment variables as the primary configuration source, which makes switching between local and hosted backends much easier.
+
+## Authentication Behavior
+
+- JWT tokens are stored in `localStorage`
+- Axios automatically attaches `Authorization: Bearer <token>` when a token exists
+- registration is restricted to official university email domains:
+  - `@stu.xim.edu.in`
+  - `@xim.edu.in`
+- admin routes are protected by authenticated role checks
+
+## Realtime Features
+
+Socket.IO is used for:
+
+- live forum reply updates
+- admin analytics refreshes
+- live connection badges on key pages
+
+If the socket connection fails, the app still tries to show fallback data where possible.
+
+## Deployment Notes
+
+- `vercel.json` rewrites all routes to `index.html`, which is required for React Router on static hosting
+- the repository already contains a `dist/` folder, but it is generated output and can be rebuilt with `npm run build`
+
+## Important Notes For Contributors
+
+- this repository is the frontend only
+- the old README previously described a separate `backend/` and `frontend/` monorepo layout, which does not match the current codebase
+- use `.env.example` to configure backend URLs for your environment

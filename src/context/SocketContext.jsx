@@ -11,9 +11,8 @@ export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        // Use environment variable or constant for backend URL
-        const backendUrl = 'https://acmmedia-backend.onrender.com';
-        // const backendUrl = 'http://localhost:5000';
+        const backendUrl =
+            import.meta.env.VITE_SOCKET_URL || 'https://acmmedia-backend.onrender.com';
 
         const newSocket = io(backendUrl, {
             autoConnect: true,
