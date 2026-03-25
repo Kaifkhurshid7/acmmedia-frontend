@@ -8,10 +8,8 @@ const Register = () => {
         name: '',
         email: '',
         password: '',
-        role: 'member',
         isAcmMember: 'no',
-        acmId: '',
-        adminSecret: ''
+        acmId: ''
     });
     const navigate = useNavigate();
 
@@ -33,12 +31,6 @@ const Register = () => {
             return;
         }
 
-        if (formData.role === 'admin') {
-            alert("Admin accounts cannot be self-registered right now. Please contact the ACM core team for admin access, then use the admin login page.");
-            return;
-        }
-        // ----------------------------------
-
         try {
             await signup(buildSignupPayload());
             alert("Registration successful! Please login to continue.");
@@ -58,6 +50,10 @@ const Register = () => {
                     <p>
                         Official news and engagement platform for ACM
                         student members.
+                    </p>
+                    <p className="form-hint" style={{ marginTop: '0.75rem' }}>
+                        Admin accounts are handled separately through the ACM core team.
+                        If you already have admin access, use the admin login page.
                     </p>
                 </header>
 
@@ -130,44 +126,6 @@ const Register = () => {
                         </p>
                     </div>
 
-                    <div className="form-section">
-                        <h4>Platform Role</h4>
-                        <select
-                            value={formData.role}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    role: e.target.value
-                                })
-                            }
-                        >
-                            <option value="member">Student / Chapter Member</option>
-                            <option value="admin">Chapter Admin / Core Team</option>
-                        </select>
-
-                        {formData.role === 'admin' && (
-                            <>
-                                <input
-                                    type="password"
-                                    placeholder="Admin Secret Key"
-                                    value={formData.adminSecret}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            adminSecret: e.target.value
-                                        })
-                                    }
-                                    required
-                                />
-                                <p className="form-warning">
-                                    Admin access is restricted to official
-                                    ACM coordinators and must be provisioned by
-                                    the backend team.
-                                </p>
-                            </>
-                        )}
-                    </div>
-
                     <button type="submit" className="primary-btn">
                         Register
                     </button>
@@ -178,6 +136,12 @@ const Register = () => {
                         Already registered?{' '}
                         <span onClick={() => navigate('/login')}>
                             Login here
+                        </span>
+                    </p>
+                    <p>
+                        ACM core team or coordinator?{' '}
+                        <span onClick={() => navigate('/admin-login')}>
+                            Admin login
                         </span>
                     </p>
                 </div>

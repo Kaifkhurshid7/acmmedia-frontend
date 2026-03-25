@@ -50,6 +50,10 @@ const AdminLogin = () => {
                         coordinators and core committee members. All access attempts
                         are authenticated and monitored.
                     </p>
+                    <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>
+                        Admin registration is not available on the public signup form.
+                        Your account must already be approved with admin role before you can sign in here.
+                    </p>
                 </header>
 
                 <form onSubmit={handleSubmit}>
