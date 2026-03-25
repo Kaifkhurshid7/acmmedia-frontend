@@ -15,6 +15,12 @@ const Register = () => {
     });
     const navigate = useNavigate();
 
+    const buildSignupPayload = () => ({
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password
+    });
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -26,12 +32,17 @@ const Register = () => {
             alert("Restricted Access: Please use your official university email (@stu.xim.edu.in or @xim.edu.in).");
             return;
         }
+
+        if (formData.role === 'admin') {
+            alert("Admin accounts cannot be self-registered right now. Please contact the ACM core team for admin access, then use the admin login page.");
+            return;
+        }
         // ----------------------------------
 
         try {
-            await signup(formData);
+            await signup(buildSignupPayload());
             alert("Registration successful! Please login to continue.");
-            navigate(formData.role === 'admin' ? '/admin-login' : '/login');
+            navigate('/login');
         } catch (err) {
             console.error(err);
             alert(extractErrorMessage(err, 'Registration failed.'));
@@ -150,7 +161,8 @@ const Register = () => {
                                 />
                                 <p className="form-warning">
                                     Admin access is restricted to official
-                                    ACM coordinators.
+                                    ACM coordinators and must be provisioned by
+                                    the backend team.
                                 </p>
                             </>
                         )}
